@@ -33,7 +33,7 @@ jobs:
 
       - name: Type-check SvelteKit frontend
         working-directory: apps/desktop
-        run: npx svelte-check --tsconfig ./tsconfig.json
+        run: npm run check
 
       - name: Set up Rust toolchain
         uses: dtolnay/rust-toolchain@stable
