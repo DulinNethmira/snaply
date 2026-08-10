@@ -1,0 +1,11 @@
+{
+  "name": "snaply",
+  "version": "1.0.0",
+  "description": "Snaply Monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "packages/*"
+  ]
+}

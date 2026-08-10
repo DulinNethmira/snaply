@@ -1,0 +1,28 @@
+[Unit]
+Description=Snaply Backend API
+After=network.target
+
+[Service]
+Type=simple
+User=snaply
+Group=snaply
+WorkingDirectory=/opt/snaply/backend
+Environment="PATH=/opt/snaply/backend/venv/bin"
+EnvironmentFile=/opt/snaply/backend/.env
+ExecStart=/opt/snaply/backend/venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1 --log-level warning
+Restart=always
+RestartSec=5
+
+# Resource limits for 512MB VPS
+MemoryMax=256M
+CPUQuota=80%
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/snaply/backend
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

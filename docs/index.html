@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snaply — Capture. Share. Done.</title>
+  <meta name="description" content="Snaply is the fastest way to capture and share screenshots on Windows. Press a hotkey, select an area, get a link — in seconds." />
+  <meta name="theme-color" content="#0f0f13" />
+  <meta property="og:title" content="Snaply — Capture. Share. Done." />
+  <meta property="og:description" content="The fastest screenshot sharing app for Windows." />
+  <meta property="og:image" content="https://github.com/DulinNethmira/snaply/releases/latest/download/og-image.png" />
+  <link rel="icon" href="https://github.com/DulinNethmira/snaply/releases/latest/download/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0a10;
+      --surface: #13131e;
+      --surface-2: #1c1c2e;
+      --border: rgba(255,255,255,0.07);
+      --accent: #6366f1;
+      --accent-2: #818cf8;
+      --accent-glow: rgba(99,102,241,0.25);
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --success: #22c55e;
+      --radius: 14px;
+      --font: 'Inter', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── Navigation ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      height: 64px;
+      background: rgba(10,10,16,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-size: 20px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #818cf8, #6366f1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-cta {
+      background: var(--accent);
+      color: #fff !important;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-weight: 600 !important;
+      transition: opacity 0.2s, transform 0.2s !important;
+    }
+
+    .nav-cta:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(99,102,241,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(99,102,241,0.12);
+      border: 1px solid rgba(99,102,241,0.25);
+      color: var(--accent-2);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 100px;
+      margin-bottom: 28px;
+      letter-spacing: 0.3px;
+    }
+
+    .hero-badge::before {
+      content: '✦';
+      font-size: 10px;
+    }
+
+    h1 {
+      font-size: clamp(48px, 8vw, 88px);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -3px;
+      margin-bottom: 24px;
+      max-width: 900px;
+    }
+
+    h1 .gradient {
+      background: linear-gradient(135deg, #a5b4fc 0%, #818cf8 40%, #6366f1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-sub {
+      font-size: clamp(16px, 2.5vw, 20px);
+      color: var(--text-muted);
+      max-width: 520px;
+      line-height: 1.65;
+      margin-bottom: 44px;
+      font-weight: 400;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 14px 28px;
+      border-radius: 10px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px var(--accent-glow);
+    }
+
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px var(--accent-glow); }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface-2);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 14px 28px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); }
+
+    .hero-meta {
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    /* ── Hotkey demo ── */
+    .hotkey-demo {
+      margin: 64px auto 0;
+      max-width: 680px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .hotkey-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .hotkey-keys {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    kbd {
+      background: var(--surface-2);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-bottom-width: 3px;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .hotkey-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .hotkey-arrow {
+      color: var(--text-dim);
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    /* ── Features ── */
+    .section {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 100px 24px;
+    }
+
+    .section-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-2);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      margin-bottom: 16px;
+      line-height: 1.1;
+    }
+
+    .section-sub {
+      font-size: 17px;
+      color: var(--text-muted);
+      max-width: 540px;
+      line-height: 1.65;
+      margin-bottom: 60px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .feature-card:hover {
+      border-color: rgba(99,102,241,0.3);
+      transform: translateY(-3px);
+    }
+
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      background: rgba(99,102,241,0.12);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 18px;
+    }
+
+    .feature-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: -0.3px;
+    }
+
+    .feature-card p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    /* ── Privacy ── */
+    .privacy-section {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .privacy-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    @media (max-width: 700px) {
+      .privacy-grid { grid-template-columns: 1fr; }
+    }
+
+    .privacy-points {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .privacy-point {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .privacy-check {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(34,197,94,0.15);
+      color: var(--success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .privacy-point h4 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .privacy-point p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ── FAQ ── */
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      max-width: 720px;
+    }
+
+    details {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    summary {
+      padding: 20px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      list-style: none;
+      user-select: none;
+    }
+
+    summary::-webkit-details-marker { display: none; }
+
+    summary::after {
+      content: '+';
+      font-size: 20px;
+      color: var(--text-dim);
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+
+    details[open] summary::after {
+      transform: rotate(45deg);
+    }
+
+    details[open] summary {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .faq-answer {
+      padding: 20px 24px;
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.75;
+    }
+
+    .faq-answer a {
+      color: var(--accent-2);
+      text-decoration: none;
+    }
+
+    /* ── Download CTA ── */
+    .cta-section {
+      text-align: center;
+      padding: 100px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 100%, rgba(99,102,241,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-section h2 {
+      font-size: clamp(32px, 5vw, 56px);
+      font-weight: 900;
+      letter-spacing: -2px;
+      margin-bottom: 16px;
+    }
+
+    .cta-section p {
+      font-size: 17px;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 24px;
+      text-align: center;
+    }
+
+    .footer-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-logo {
+      font-size: 16px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #818cf8, #6366f1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--text-muted); }
+
+    .footer-copy {
+      font-size: 13px;
+      color: var(--text-dim);
+      width: 100%;
+      margin-top: 16px;
+      text-align: center;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      .hotkey-demo { flex-direction: column; gap: 16px; }
+      .hotkey-arrow { transform: rotate(90deg); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav>
+  <a class="nav-logo" href="#">Snaply</a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#privacy">Privacy</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="https://github.com/DulinNethmira/snaply" target="_blank" rel="noopener">GitHub</a></li>
+    <li><a class="nav-cta" href="https://github.com/DulinNethmira/snaply/releases/latest" target="_blank" rel="noopener">⬇ Download</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge">Now available — v0.1.0</div>
+  <h1>
+    Capture.<br>
+    Share.<br>
+    <span class="gradient">Done.</span>
+  </h1>
+  <p class="hero-sub">
+    Snaply is the fastest screenshot sharing tool for Windows.
+    One hotkey. One click. A shareable link — in under 3 seconds.
+  </p>
+  <div class="hero-actions">
+    <a class="btn-primary" href="https://github.com/DulinNethmira/snaply/releases/latest" target="_blank" rel="noopener">
+      ⬇ Download for Windows
+    </a>
+    <a class="btn-secondary" href="https://github.com/DulinNethmira/snaply" target="_blank" rel="noopener">
+      ★ View on GitHub
+    </a>
+  </div>
+  <p class="hero-meta">Free & open source · Windows 10/11 · ~8 MB installer</p>
+
+  <!-- Hotkey demo -->
+  <div class="hotkey-demo">
+    <div class="hotkey-step">
+      <div class="hotkey-keys">
+        <kbd>Ctrl</kbd><span style="color:var(--text-dim);margin:0 2px;">+</span>
+        <kbd>Shift</kbd><span style="color:var(--text-dim);margin:0 2px;">+</span>
+        <kbd>S</kbd>
+      </div>
+      <span class="hotkey-label">Press the hotkey</span>
+    </div>
+    <span class="hotkey-arrow">→</span>
+    <div class="hotkey-step">
+      <div class="hotkey-keys" style="font-size:24px;">🖱️</div>
+      <span class="hotkey-label">Select any area</span>
+    </div>
+    <span class="hotkey-arrow">→</span>
+    <div class="hotkey-step">
+      <div class="hotkey-keys" style="font-size:24px;">✏️</div>
+      <span class="hotkey-label">Annotate (optional)</span>
+    </div>
+    <span class="hotkey-arrow">→</span>
+    <div class="hotkey-step">
+      <div class="hotkey-keys" style="font-size:24px;">🔗</div>
+      <span class="hotkey-label">Link copied!</span>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="section" id="features">
+  <div class="section-label">Features</div>
+  <h2 class="section-title">Everything you need to share instantly</h2>
+  <p class="section-sub">Snaply is built around a single principle: getting from capture to share link as fast as possible.</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>Instant Capture</h3>
+      <p>Global hotkey works from any application. No window switching. No context loss. Select your region and you're done.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔗</div>
+      <h3>One-Click Share</h3>
+      <p>The share link is automatically copied to your clipboard. Paste it anywhere — Slack, Discord, email, anywhere.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">☁️</div>
+      <h3>Cloudflare R2 Storage</h3>
+      <p>Files are stored on Cloudflare's global network. Fast delivery for your recipients, wherever they are in the world.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⏱️</div>
+      <h3>Expiring Links</h3>
+      <p>Share links expire automatically. Configure how long links stay alive — from 1 hour to 30 days.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3>Password Protection</h3>
+      <p>Sensitive screenshots can be password-protected. Recipients need the password to view or download the file.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📁</div>
+      <h3>File Sharing</h3>
+      <p>Share any file, not just screenshots. Right-click in Windows Explorer and select "Share with Snaply".</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📋</div>
+      <h3>Clipboard Detection</h3>
+      <p>Press Ctrl+Shift+V to instantly share whatever image or URL is in your clipboard.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔄</div>
+      <h3>Auto-Update</h3>
+      <p>Snaply updates itself silently in the background. You always have the latest version with the newest features.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🪟</div>
+      <h3>System Tray</h3>
+      <p>Snaply lives quietly in your system tray. It's always ready but never in your way.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Privacy -->
+<section class="privacy-section" id="privacy">
+  <div class="section">
+    <div class="privacy-grid">
+      <div>
+        <div class="section-label">Privacy</div>
+        <h2 class="section-title">Your files belong to you</h2>
+        <p class="section-sub" style="margin-bottom: 0;">Snaply is built with privacy as a first-class requirement. We collect only what is necessary to operate the service.</p>
+      </div>
+      <div class="privacy-points">
+        <div class="privacy-point">
+          <div class="privacy-check">✓</div>
+          <div>
+            <h4>No passive data collection</h4>
+            <p>Snaply never monitors your screen, clipboard, or files unless you explicitly trigger an action.</p>
+          </div>
+        </div>
+        <div class="privacy-point">
+          <div class="privacy-check">✓</div>
+          <div>
+            <h4>Direct-to-cloud uploads</h4>
+            <p>Files upload directly from your computer to Cloudflare R2. The Snaply server never sees your file content.</p>
+          </div>
+        </div>
+        <div class="privacy-point">
+          <div class="privacy-check">✓</div>
+          <div>
+            <h4>Credentials in Windows Credential Manager</h4>
+            <p>Your Snaply login token is stored securely using the Windows Credential Manager API — not in plain text files.</p>
+          </div>
+        </div>
+        <div class="privacy-point">
+          <div class="privacy-check">✓</div>
+          <div>
+            <h4>Automatic expiration</h4>
+            <p>Shared files are automatically deleted from storage when their link expires. Nothing persists indefinitely by default.</p>
+          </div>
+        </div>
+        <div class="privacy-point">
+          <div class="privacy-check">✓</div>
+          <div>
+            <h4>Open source</h4>
+            <p>The entire codebase is public on GitHub. You can audit exactly what Snaply does with your data.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq">
+  <div class="section-label">FAQ</div>
+  <h2 class="section-title">Common questions</h2>
+  <p class="section-sub">Can't find what you need? <a href="https://github.com/DulinNethmira/snaply/issues" target="_blank" rel="noopener" style="color:var(--accent-2);text-decoration:none;">Open an issue on GitHub.</a></p>
+  <div class="faq-list">
+    <details open>
+      <summary>Is Snaply free?</summary>
+      <div class="faq-answer">Yes. Snaply is free and open source under the MIT license. The desktop app and backend are both freely available on GitHub.</div>
+    </details>
+    <details>
+      <summary>What are the system requirements?</summary>
+      <div class="faq-answer">Windows 10 or Windows 11 (64-bit). Approximately 50 MB of disk space. An internet connection is required for uploading and sharing.</div>
+    </details>
+    <details>
+      <summary>Where are my files stored?</summary>
+      <div class="faq-answer">Files are stored on Cloudflare R2 object storage — a globally distributed, highly available cloud storage service. Files are stored only for as long as their share link is active.</div>
+    </details>
+    <details>
+      <summary>How long do share links last?</summary>
+      <div class="faq-answer">By default, share links expire after 24 hours. You can configure the default expiration in your account settings. Links can also be manually revoked at any time from your dashboard.</div>
+    </details>
+    <details>
+      <summary>What file types can I share?</summary>
+      <div class="faq-answer">Snaply supports images (PNG, JPEG, GIF, WebP), videos (MP4, WebM), PDFs, ZIP archives, plain text, and CSV files. File size limit is 100 MB per file.</div>
+    </details>
+    <details>
+      <summary>Is there a storage limit?</summary>
+      <div class="faq-answer">Each account has a 1 GB storage quota and a limit of 500 uploads per month. Files that have had their share links expire or deleted no longer count toward your quota.</div>
+    </details>
+    <details>
+      <summary>Why does Windows show a security warning when installing?</summary>
+      <div class="faq-answer">This is a Windows SmartScreen warning for software that doesn't have a purchased code signing certificate. This is standard for indie software. You can safely click "More info" → "Run anyway". See our <a href="https://github.com/DulinNethmira/snaply/blob/main/RELEASE.md" target="_blank">RELEASE.md</a> for details on our signing roadmap.</div>
+    </details>
+    <details>
+      <summary>Can I self-host the Snaply backend?</summary>
+      <div class="faq-answer">Yes. The backend is a standard FastAPI + SQLite application. See the <a href="https://github.com/DulinNethmira/snaply" target="_blank">README</a> for setup instructions. You'll need a Cloudflare R2 bucket and the corresponding environment variables.</div>
+    </details>
+  </div>
+</section>
+
+<!-- Download CTA -->
+<section class="cta-section">
+  <h2>Start sharing in 60 seconds</h2>
+  <p>Download Snaply, install, and capture your first screenshot — it's that fast.</p>
+  <div class="hero-actions" style="justify-content:center;">
+    <a class="btn-primary" href="https://github.com/DulinNethmira/snaply/releases/latest" target="_blank" rel="noopener">
+      ⬇ Download for Windows — Free
+    </a>
+    <a class="btn-secondary" href="https://github.com/DulinNethmira/snaply" target="_blank" rel="noopener">
+      View Source on GitHub
+    </a>
+  </div>
+  <p style="margin-top:20px;font-size:13px;color:var(--text-dim);">v0.1.0 · MIT License · Windows 10 / 11</p>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-logo">Snaply</span>
+    <ul class="footer-links">
+      <li><a href="https://github.com/DulinNethmira/snaply" target="_blank" rel="noopener">GitHub</a></li>
+      <li><a href="https://github.com/DulinNethmira/snaply/releases" target="_blank" rel="noopener">Releases</a></li>
+      <li><a href="https://github.com/DulinNethmira/snaply/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Changelog</a></li>
+      <li><a href="https://github.com/DulinNethmira/snaply/issues" target="_blank" rel="noopener">Support</a></li>
+      <li><a href="https://github.com/DulinNethmira/snaply/blob/main/LICENSE" target="_blank" rel="noopener">License</a></li>
+    </ul>
+    <p class="footer-copy">© 2026 Snaply · Built with Tauri, SvelteKit, and FastAPI</p>
+  </div>
+</footer>
+
+</body>
+</html>

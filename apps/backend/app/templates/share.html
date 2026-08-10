@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ filename }} — Snaply</title>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="{{ filename }}">
+  <meta property="og:description" content="{{ file_size_human }} · Shared with Snaply">
+  <meta property="og:type" content="{% if file_type == 'image' %}image{% elif file_type == 'video' %}video.other{% else %}website{% endif %}">
+  <meta property="og:site_name" content="Snaply">
+  {% if file_type == 'image' and preview_url %}
+  <meta property="og:image" content="{{ preview_url }}">
+  <meta property="og:image:type" content="{{ mime_type }}">
+  {% endif %}
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="{% if file_type == 'image' %}summary_large_image{% else %}summary{% endif %}">
+  <meta name="twitter:title" content="{{ filename }}">
+  <meta name="twitter:description" content="{{ file_size_human }} · Shared with Snaply">
+  {% if file_type == 'image' and preview_url %}
+  <meta name="twitter:image" content="{{ preview_url }}">
+  {% endif %}
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <main class="share-container">
+    <div class="preview-wrapper" id="preview-area">
+      {% if file_type == 'image' %}
+        <img
+          src="{{ media_url }}"
+          alt="{{ filename }}"
+          class="image-viewer"
+          id="share-image"
+          loading="lazy"
+          onclick="toggleFullscreen()"
+        >
+      {% elif file_type == 'video' %}
+        <video
+          src="{{ media_url }}"
+          class="video-viewer"
+          controls
+          preload="metadata"
+          id="share-video"
+        ></video>
+      {% elif file_type == 'text' %}
+        <div class="text-viewer" id="text-content">{{ text_content }}</div>
+      {% else %}
+        <div class="generic-viewer">
+          <div class="generic-icon">📄</div>
+          <div class="filename" style="font-size:1.25rem;">{{ filename }}</div>
+          <div style="color:var(--text-secondary);font-size:0.9rem;">{{ mime_type }}</div>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="metadata-bar">
+      <div class="metadata-info">
+        <div class="filename">{{ filename }}</div>
+        <div class="file-stats">
+          <span>{{ file_size_human }}</span>
+          <span>{{ mime_type }}</span>
+          {% if expires_at %}
+          <span>Expires {{ expires_at }}</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="actions">
+        <a href="{{ download_url }}" class="btn btn-primary" download="{{ filename }}" id="download-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download
+        </a>
+        <button class="btn btn-secondary" onclick="copyLink()" id="copy-link-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          Copy Link
+        </button>
+        {% if file_type == 'image' %}
+        <button class="btn btn-secondary" onclick="toggleFullscreen()" id="fullscreen-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+          Fullscreen
+        </button>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    Shared with <a href="/">Snaply</a>
+  </footer>
+
+  <script>
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.getElementById('copy-link-btn');
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✓ Copied!';
+        setTimeout(() => { btn.innerHTML = orig; }, 2000);
+      });
+    }
+
+    function toggleFullscreen() {
+      const el = document.getElementById('preview-area');
+      if (!document.fullscreenElement) {
+        el.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+  </script>
+</body>
+</html>

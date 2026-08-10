@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+.DS_Store
+src-tauri/target/
+build/
+*.log
+.svelte-kit/
+# Tauri updater private key — NEVER commit this
+apps/desktop/snaply-updater.key
