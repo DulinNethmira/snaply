@@ -1,8 +1,12 @@
 import asyncio
+import os
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+
+# Disable rate limiting in tests — must be set before importing the app
+os.environ["RATELIMIT_ENABLED"] = "0"
 
 from app.db.base import Base
 from app.db.session import get_db

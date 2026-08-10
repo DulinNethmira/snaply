@@ -20,6 +20,7 @@ import os
 from fastapi.staticfiles import StaticFiles
 
 from app.api.v1 import auth, users, uploads, usage, health, shares, share_pages
+from app.api.v1 import local_storage as local_storage_router
 from app.core.cleanup import cleanup_expired_objects_loop
 
 limiter = Limiter(key_func=get_remote_address, default_limits=["100/minute"])
@@ -30,6 +31,12 @@ async def lifespan(app: FastAPI):
     # Create tables on startup
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+    import logging
+    logging.getLogger("app").info(
+        f"Snaply backend starting — env={settings.SNAPLY_ENV}, "
+        f"storage={settings.STORAGE_PROVIDER}, debug={settings.DEBUG}"
+    )
         
     # Start background tasks
     cleanup_task = asyncio.create_task(cleanup_expired_objects_loop())
@@ -110,3 +117,7 @@ app.include_router(usage.router, prefix=settings.API_V1_STR)
 static_dir = os.path.join(os.path.dirname(__file__), "static")
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 app.include_router(share_pages.router)
+
+# Local storage endpoints — only active in development mode
+if settings.STORAGE_PROVIDER == "local":
+    app.include_router(local_storage_router.router)

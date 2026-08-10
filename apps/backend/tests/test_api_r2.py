@@ -13,8 +13,8 @@ async def test_request_upload(auth_client: AsyncClient):
     data = resp.json()
     assert "upload_id" in data
     assert "upload_url" in data
-    # Because we don't have R2_ACCOUNT_ID set in test env, it uses the mock URL
-    assert data["upload_url"].startswith("http://mock.r2/upload/")
+    # In local/test mode, upload_url points to the local storage endpoint
+    assert data["upload_url"].startswith("http://127.0.0.1:8000/local-storage/upload/")
 
 
 @pytest.mark.asyncio
@@ -50,7 +50,8 @@ async def test_complete_upload_and_download_share(auth_client: AsyncClient):
     assert resp.status_code == 200
     dl_data = resp.json()
     assert "download_url" in dl_data
-    assert dl_data["download_url"].startswith("http://mock.r2/download/")
+    # In local/test mode, download_url points to the local storage endpoint
+    assert dl_data["download_url"].startswith("http://127.0.0.1:8000/local-storage/files/")
     assert dl_data["filename"] == "valid.png"
     
     # Attempt complete again on same upload ID should fail

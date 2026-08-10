@@ -4,6 +4,7 @@
   import UploadQueue from '$lib/components/UploadQueue.svelte';
   import ClipboardPrompt from '$lib/components/ClipboardPrompt.svelte';
   import Auth from '$lib/components/Auth.svelte';
+  import DevBadge from '$lib/components/DevBadge.svelte';
   import type { Snippet } from 'svelte';
   import { onMount } from 'svelte';
   import { initUploadManager, addFileUpload } from '$lib/stores/upload.svelte';
@@ -57,6 +58,8 @@
   <UploadQueue />
   <ClipboardPrompt />
 {/if}
+
+<DevBadge />
 
 <style>
   .app-shell {

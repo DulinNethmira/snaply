@@ -6,7 +6,10 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Snaply Backend"
     API_V1_STR: str = "/api/v1"
     DEBUG: bool = False
-    
+
+    # Environment: "development" or "production"
+    SNAPLY_ENV: str = "production"
+
     # SECURITY: No default — app MUST NOT start without a real secret
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60  # 1 hour; refresh flow extends sessions
@@ -22,6 +25,12 @@ class Settings(BaseSettings):
     MAX_STORAGE_PER_USER_BYTES: int = 1 * 1024 * 1024 * 1024  # 1GB
     MAX_MONTHLY_UPLOADS: int = 500
     DEFAULT_EXPIRATION_HOURS: int = 24
+
+    # Storage provider: "local" or "r2"
+    STORAGE_PROVIDER: str = "r2"
+
+    # Local storage directory (used only when STORAGE_PROVIDER=local)
+    LOCAL_STORAGE_DIR: str = "data/storage"
 
     # Cloudflare R2
     R2_ACCOUNT_ID: str = ""
