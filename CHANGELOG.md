@@ -7,6 +7,20 @@ Snaply uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [0.1.1] — 2026-08-11
+
+### Fixed
+
+- Removed the duplicate Windows system tray registration so Snaply shows a single tray icon.
+- Added an explicit tray icon and tooltip from the packaged app metadata.
+- Allowed the installed Tauri app origin (`https://tauri.localhost`) in local backend CORS settings.
+- Blocked `Ctrl+Shift+S` capture overlays when the user is not authenticated.
+- Replaced failed local R2 mock uploads with real local filesystem upload/download endpoints for testing.
+
+### Changed
+
+- Refined the sign-in/sign-up screen with a modern animated desktop UI.
+
 ## [0.1.0] — 2026-08-09
 
 ### Initial Release
@@ -46,3 +60,4 @@ This is the first public release of Snaply.
 - OpenAPI docs disabled in production
 
 [0.1.0]: https://github.com/DulinNethmira/snaply/releases/tag/v0.1.0
+[0.1.1]: https://github.com/DulinNethmira/snaply/releases/tag/v0.1.1

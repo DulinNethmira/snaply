@@ -134,6 +134,24 @@ fn copy_to_clipboard(app: tauri::AppHandle, image_bytes: Vec<u8>) -> Result<(), 
 }
 
 fn trigger_capture(app: &tauri::AppHandle) {
+    // ── Auth guard ────────────────────────────────────────────────────
+    // Don't open the capture overlay when the user hasn't logged in yet.
+    // Instead, just focus the main window so they can authenticate.
+    let is_authenticated = keyring::Entry::new("Snaply", "AuthToken")
+        .ok()
+        .and_then(|entry| entry.get_password().ok())
+        .map(|token| !token.is_empty())
+        .unwrap_or(false);
+
+    if !is_authenticated {
+        if let Some(win) = app.get_webview_window("main") {
+            let _ = win.show();
+            let _ = win.set_focus();
+        }
+        return;
+    }
+    // ──────────────────────────────────────────────────────────────────
+
     println!("Triggering capture...");
     let xcap_monitors = XcapMonitor::all().unwrap_or_default();
     let mut capture_map = HashMap::new();
@@ -184,6 +202,7 @@ fn trigger_capture(app: &tauri::AppHandle) {
         }
     }
 }
+
 
 // --------------------------------------------------------
 // Phase 7 Features: Auth & Cloud Integration
@@ -413,9 +432,16 @@ pub fn run() {
             let label_i = MenuItem::with_id(app, "snaply", "Snaply", false, None::<&str>)?;
             let menu = Menu::with_items(app, &[&label_i, &open_i, &quit_i])?;
 
-            TrayIconBuilder::new()
+            let mut tray_builder = TrayIconBuilder::new()
                 .menu(&menu)
-                .show_menu_on_left_click(false)
+                .tooltip("Snaply - Capture. Share. Done.")
+                .show_menu_on_left_click(false);
+
+            if let Some(icon) = app.default_window_icon().cloned() {
+                tray_builder = tray_builder.icon(icon);
+            }
+
+            tray_builder
                 .on_menu_event(|app, event| match event.id.as_ref() {
                     "quit" => {
                         app.exit(0);

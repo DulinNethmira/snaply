@@ -10,195 +10,343 @@
   let loading = $state(false);
 
   async function handleSubmit(e: Event) {
-      e.preventDefault();
-      error = '';
-      loading = true;
+    e.preventDefault();
+    error = '';
+    loading = true;
 
-      try {
-          if (mode === 'register') {
-              await register(email, password);
-              // Auto-login after register
-              await login(email, password);
-              onLogin();
-          } else {
-              await login(email, password);
-              onLogin();
-          }
-      } catch (err: any) {
-          error = err.message || 'Authentication failed';
-      } finally {
-          loading = false;
+    try {
+      if (mode === 'register') {
+        await register(email, password);
+        await login(email, password);
+      } else {
+        await login(email, password);
       }
+      onLogin();
+    } catch (err: any) {
+      error = err.message || 'Authentication failed';
+    } finally {
+      loading = false;
+    }
+  }
+
+  function switchMode(nextMode: 'login' | 'register') {
+    mode = nextMode;
+    error = '';
   }
 </script>
 
-<div class="auth-container">
-  <div class="auth-card">
-    <div class="logo">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
-      <h1>Snaply</h1>
+<div class="auth-shell">
+  <section class="auth-panel" aria-label="Snaply authentication">
+    <div class="brand-row">
+      <div class="mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M7 7.5C7 6.12 8.12 5 9.5 5h5C15.88 5 17 6.12 17 7.5v1h1.25A2.75 2.75 0 0 1 21 11.25v5A2.75 2.75 0 0 1 18.25 19H5.75A2.75 2.75 0 0 1 3 16.25v-5A2.75 2.75 0 0 1 5.75 8.5H7v-1Z" />
+          <path d="M8.8 13.7h6.4M12 10.5v6.4" />
+        </svg>
+      </div>
+      <div>
+        <p class="eyebrow">Snaply</p>
+        <h1>{mode === 'login' ? 'Welcome back' : 'Create your account'}</h1>
+      </div>
     </div>
-    
-    <h2>{mode === 'login' ? 'Welcome back' : 'Create an account'}</h2>
-    <p class="subtitle">{mode === 'login' ? 'Sign in to access your shares' : 'Get started with Snaply'}</p>
+
+    <div class="mode-switch" aria-label="Authentication mode">
+      <button
+        type="button"
+        class:active={mode === 'login'}
+        aria-pressed={mode === 'login'}
+        onclick={() => switchMode('login')}
+      >
+        Sign in
+      </button>
+      <button
+        type="button"
+        class:active={mode === 'register'}
+        aria-pressed={mode === 'register'}
+        onclick={() => switchMode('register')}
+      >
+        Sign up
+      </button>
+    </div>
 
     <form onsubmit={handleSubmit}>
       {#if error}
-        <div class="error-msg">{error}</div>
+        <div class="error-msg" role="alert">{error}</div>
       {/if}
 
-      <div class="input-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" bind:value={email} required placeholder="you@example.com" />
-      </div>
+      <label class="field">
+        <span>Email</span>
+        <input
+          type="email"
+          bind:value={email}
+          required
+          autocomplete="email"
+          placeholder="you@example.com"
+        />
+      </label>
 
-      <div class="input-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" bind:value={password} required placeholder="••••••••" />
-      </div>
+      <label class="field">
+        <span>Password</span>
+        <input
+          type="password"
+          bind:value={password}
+          required
+          autocomplete={mode === 'login' ? 'current-password' : 'new-password'}
+          placeholder="Enter your password"
+        />
+      </label>
 
-      <button type="submit" class="btn-primary" disabled={loading}>
-        {loading ? 'Processing...' : (mode === 'login' ? 'Sign In' : 'Sign Up')}
+      <button type="submit" class="primary-action" disabled={loading}>
+        {#if loading}
+          <span class="spinner" aria-hidden="true"></span>
+          <span>{mode === 'login' ? 'Signing in' : 'Creating account'}</span>
+        {:else}
+          <span>{mode === 'login' ? 'Sign in to Snaply' : 'Create account'}</span>
+        {/if}
       </button>
     </form>
 
-    <div class="toggle-mode">
-      {#if mode === 'login'}
-        Don't have an account? <button class="btn-link" onclick={() => mode = 'register'}>Sign up</button>
-      {:else}
-        Already have an account? <button class="btn-link" onclick={() => mode = 'login'}>Sign in</button>
-      {/if}
-    </div>
-  </div>
+    <p class="footer-copy">
+      {mode === 'login' ? 'New to Snaply?' : 'Already have an account?'}
+      <button
+        type="button"
+        onclick={() => switchMode(mode === 'login' ? 'register' : 'login')}
+      >
+        {mode === 'login' ? 'Create account' : 'Sign in'}
+      </button>
+    </p>
+  </section>
 </div>
 
 <style>
-  .auth-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: var(--bg-primary);
-  }
-
-  .auth-card {
-    background-color: var(--surface-primary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-xl);
+  .auth-shell {
+    position: relative;
+    display: grid;
+    min-height: 100vh;
+    place-items: center;
+    overflow: hidden;
     padding: var(--space-8);
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    background:
+      linear-gradient(135deg, rgba(124, 109, 247, 0.12), transparent 34%),
+      linear-gradient(225deg, rgba(52, 211, 153, 0.08), transparent 30%),
+      var(--bg);
   }
 
-  .logo {
+  .auth-shell::before {
+    position: absolute;
+    inset: 0;
+    content: '';
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), transparent);
+    pointer-events: none;
+  }
+
+  .auth-panel {
+    position: relative;
+    width: min(100%, 420px);
+    padding: var(--space-8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-xl);
+    background: rgba(18, 23, 34, 0.78);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(124, 109, 247, 0.08);
+    backdrop-filter: blur(18px);
+    animation: panel-enter 320ms ease both;
+  }
+
+  .brand-row {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
-    color: var(--accent-primary);
+    gap: var(--space-4);
     margin-bottom: var(--space-6);
   }
 
-  .logo h1 {
-    font-size: var(--font-xl);
-    font-weight: 700;
-    margin: 0;
-    color: var(--text-primary);
+  .mark {
+    display: grid;
+    width: 48px;
+    height: 48px;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid rgba(124, 109, 247, 0.36);
+    border-radius: var(--radius-lg);
+    background: rgba(124, 109, 247, 0.14);
+    box-shadow: 0 0 24px rgba(124, 109, 247, 0.16);
   }
 
-  h2 {
+  .mark svg {
+    width: 26px;
+    height: 26px;
+    stroke: var(--accent-hover);
+    stroke-width: 1.8;
+  }
+
+  .eyebrow {
     margin: 0 0 var(--space-1);
-    font-size: var(--font-lg);
+    color: var(--accent-hover);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    text-transform: uppercase;
   }
 
-  .subtitle {
-    color: var(--text-secondary);
-    font-size: var(--font-sm);
+  h1 {
+    margin: 0;
+    font-size: var(--text-2xl);
+  }
+
+  .mode-switch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-1);
+    padding: var(--space-1);
     margin-bottom: var(--space-6);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: rgba(8, 10, 15, 0.62);
+  }
+
+  .mode-switch button {
+    min-height: 38px;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    transition: background var(--transition-normal), color var(--transition-normal), transform var(--transition-fast);
+  }
+
+  .mode-switch button.active {
+    color: var(--text);
+    background: var(--elevated);
+    box-shadow: var(--shadow-sm);
   }
 
   form {
-    display: flex;
-    flex-direction: column;
+    display: grid;
     gap: var(--space-4);
   }
 
-  .input-group {
-    display: flex;
-    flex-direction: column;
+  .field {
+    display: grid;
     gap: var(--space-2);
-  }
-
-  label {
-    font-size: var(--font-xs);
-    font-weight: 500;
     color: var(--text-secondary);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-medium);
   }
 
-  input {
-    background-color: var(--surface-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: var(--space-3);
-    color: var(--text-primary);
-    font-size: var(--font-sm);
-    transition: all 0.2s;
+  .field input {
+    height: 44px;
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(8, 10, 15, 0.7);
+    font-size: var(--text-md);
   }
 
-  input:focus {
-    outline: none;
-    border-color: var(--accent-primary);
-    box-shadow: 0 0 0 2px rgba(124, 109, 247, 0.2);
+  .field input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(124, 109, 247, 0.18);
   }
 
-  .btn-primary {
-    background-color: var(--accent-primary);
-    color: white;
-    border: none;
-    border-radius: var(--radius-md);
-    padding: var(--space-3);
-    font-size: var(--font-sm);
-    font-weight: 500;
-    cursor: pointer;
+  .primary-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    height: 44px;
     margin-top: var(--space-2);
-    transition: background-color 0.2s;
+    border-radius: var(--radius-lg);
+    color: white;
+    background: linear-gradient(135deg, var(--accent), #4f8ff7);
+    font-size: var(--text-md);
+    font-weight: var(--weight-semibold);
+    box-shadow: 0 14px 30px rgba(79, 143, 247, 0.22);
+    transition: transform var(--transition-fast), box-shadow var(--transition-normal), opacity var(--transition-fast);
   }
 
-  .btn-primary:hover:not(:disabled) {
-    background-color: var(--accent-hover);
+  .primary-action:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 18px 36px rgba(79, 143, 247, 0.28);
   }
-  
-  .btn-primary:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
+
+  .primary-action:active:not(:disabled),
+  .mode-switch button:active {
+    transform: scale(0.98);
+  }
+
+  .primary-action:disabled {
+    cursor: wait;
+    opacity: 0.72;
+  }
+
+  .spinner {
+    width: 15px;
+    height: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.34);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 780ms linear infinite;
   }
 
   .error-msg {
-    background-color: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
     padding: var(--space-3);
-    border-radius: var(--radius-md);
-    font-size: var(--font-sm);
-    border: 1px solid rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(248, 113, 113, 0.24);
+    border-radius: var(--radius-lg);
+    color: var(--error);
+    background: rgba(248, 113, 113, 0.1);
+    font-size: var(--text-sm);
+    animation: error-enter 180ms ease both;
   }
 
-  .toggle-mode {
+  .footer-copy {
     margin-top: var(--space-6);
-    text-align: center;
-    font-size: var(--font-sm);
     color: var(--text-secondary);
+    font-size: var(--text-sm);
+    text-align: center;
   }
 
-  .btn-link {
-    background: none;
-    border: none;
-    color: var(--accent-primary);
-    cursor: pointer;
-    font-weight: 500;
-    padding: 0;
+  .footer-copy button {
+    color: var(--accent-hover);
+    font-weight: var(--weight-semibold);
   }
 
-  .btn-link:hover {
-    text-decoration: underline;
+  .footer-copy button:hover {
+    color: var(--text);
+  }
+
+  @keyframes panel-enter {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes error-enter {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (max-width: 520px) {
+    .auth-shell {
+      padding: var(--space-4);
+    }
+
+    .auth-panel {
+      padding: var(--space-6);
+    }
   }
 </style>
