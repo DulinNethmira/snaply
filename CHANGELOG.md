@@ -7,6 +7,18 @@ Snaply uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [0.1.2] — 2026-08-11
+
+### Fixed
+
+- Verified account creation from the installed Tauri app by allowing the `https://tauri.localhost` origin in local backend configuration and restarting the local backend.
+
+### Changed
+
+- Updated the desktop app to Snaply's official brand palette: cyan `#24C8DB` as the primary accent and yellow `#FFC131` as the secondary accent.
+- Replaced placeholder app marks in the desktop UI with the official Snaply logo.
+- Removed remaining legacy purple/gold accent colors from the desktop source theme.
+
 ## [0.1.1] — 2026-08-11
 
 ### Fixed
@@ -61,3 +73,4 @@ This is the first public release of Snaply.
 
 [0.1.0]: https://github.com/DulinNethmira/snaply/releases/tag/v0.1.0
 [0.1.1]: https://github.com/DulinNethmira/snaply/releases/tag/v0.1.1
+[0.1.2]: https://github.com/DulinNethmira/snaply/releases/tag/v0.1.2

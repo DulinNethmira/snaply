@@ -25,9 +25,9 @@
     gap: 5px;
     padding: 3px 9px;
     border-radius: 99px;
-    background: rgba(255, 170, 0, 0.12);
-    border: 1px solid rgba(255, 170, 0, 0.35);
-    color: #ffaa00;
+    background: var(--snaply-yellow-muted);
+    border: 1px solid rgba(255, 193, 49, 0.35);
+    color: var(--snaply-yellow);
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -42,7 +42,7 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #ffaa00;
+    background: var(--snaply-yellow);
     animation: pulse 2s ease-in-out infinite;
     flex-shrink: 0;
   }

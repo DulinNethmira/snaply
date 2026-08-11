@@ -38,12 +38,7 @@
 <div class="auth-shell">
   <section class="auth-panel" aria-label="Snaply authentication">
     <div class="brand-row">
-      <div class="mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none">
-          <path d="M7 7.5C7 6.12 8.12 5 9.5 5h5C15.88 5 17 6.12 17 7.5v1h1.25A2.75 2.75 0 0 1 21 11.25v5A2.75 2.75 0 0 1 18.25 19H5.75A2.75 2.75 0 0 1 3 16.25v-5A2.75 2.75 0 0 1 5.75 8.5H7v-1Z" />
-          <path d="M8.8 13.7h6.4M12 10.5v6.4" />
-        </svg>
-      </div>
+      <img class="mark" src="/snaply-logo.png" alt="" />
       <div>
         <p class="eyebrow">Snaply</p>
         <h1>{mode === 'login' ? 'Welcome back' : 'Create your account'}</h1>
@@ -127,8 +122,8 @@
     overflow: hidden;
     padding: var(--space-8);
     background:
-      linear-gradient(135deg, rgba(124, 109, 247, 0.12), transparent 34%),
-      linear-gradient(225deg, rgba(52, 211, 153, 0.08), transparent 30%),
+      linear-gradient(135deg, var(--snaply-cyan-muted), transparent 34%),
+      linear-gradient(225deg, var(--snaply-yellow-muted), transparent 30%),
       var(--bg);
   }
 
@@ -151,7 +146,7 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-xl);
     background: rgba(18, 23, 34, 0.78);
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(124, 109, 247, 0.08);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42), 0 0 0 1px var(--snaply-cyan-muted);
     backdrop-filter: blur(18px);
     animation: panel-enter 320ms ease both;
   }
@@ -164,22 +159,11 @@
   }
 
   .mark {
-    display: grid;
     width: 48px;
     height: 48px;
     flex: 0 0 auto;
-    place-items: center;
-    border: 1px solid rgba(124, 109, 247, 0.36);
-    border-radius: var(--radius-lg);
-    background: rgba(124, 109, 247, 0.14);
-    box-shadow: 0 0 24px rgba(124, 109, 247, 0.16);
-  }
-
-  .mark svg {
-    width: 26px;
-    height: 26px;
-    stroke: var(--accent-hover);
-    stroke-width: 1.8;
+    object-fit: contain;
+    filter: drop-shadow(0 0 14px var(--snaply-cyan-glow));
   }
 
   .eyebrow {
@@ -243,7 +227,7 @@
 
   .field input:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(124, 109, 247, 0.18);
+    box-shadow: 0 0 0 3px var(--snaply-cyan-glow);
   }
 
   .primary-action {
@@ -255,16 +239,16 @@
     margin-top: var(--space-2);
     border-radius: var(--radius-lg);
     color: white;
-    background: linear-gradient(135deg, var(--accent), #4f8ff7);
+    background: linear-gradient(135deg, var(--snaply-cyan), var(--snaply-cyan-active));
     font-size: var(--text-md);
     font-weight: var(--weight-semibold);
-    box-shadow: 0 14px 30px rgba(79, 143, 247, 0.22);
+    box-shadow: 0 14px 30px var(--snaply-cyan-glow);
     transition: transform var(--transition-fast), box-shadow var(--transition-normal), opacity var(--transition-fast);
   }
 
   .primary-action:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 18px 36px rgba(79, 143, 247, 0.28);
+    box-shadow: 0 18px 36px var(--snaply-cyan-glow);
   }
 
   .primary-action:active:not(:disabled),

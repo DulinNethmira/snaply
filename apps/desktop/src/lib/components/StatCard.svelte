@@ -37,7 +37,7 @@
   }
 
   .stat-card.accent {
-    border-color: rgba(124, 109, 247, 0.15);
+    border-color: var(--snaply-cyan-muted);
   }
 
   .stat-label {

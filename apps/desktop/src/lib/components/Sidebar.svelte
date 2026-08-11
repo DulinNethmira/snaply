@@ -22,7 +22,7 @@
 
 <nav class="sidebar" aria-label="Main navigation">
   <div class="sidebar-brand">
-    <div class="brand-icon">S</div>
+    <img class="brand-icon" src="/snaply-logo.png" alt="" />
     <span class="brand-name">Snaply</span>
   </div>
 
@@ -75,15 +75,9 @@
   .brand-icon {
     width: 28px;
     height: 28px;
-    border-radius: var(--radius-lg);
-    background: linear-gradient(135deg, var(--accent), #9B8AFB);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: var(--weight-bold);
-    font-size: var(--text-sm);
-    color: white;
+    object-fit: contain;
     flex-shrink: 0;
+    filter: drop-shadow(0 0 8px var(--snaply-cyan-glow));
   }
 
   .brand-name {

@@ -1,25 +1,53 @@
 :root {
+  /* ── Official Brand ── */
+  --snaply-cyan: #24C8DB;
+  --snaply-cyan-hover: #4DD8E8;
+  --snaply-cyan-active: #16AFC1;
+  --snaply-cyan-muted: rgba(36, 200, 219, 0.12);
+  --snaply-cyan-glow: rgba(36, 200, 219, 0.24);
+
+  --snaply-yellow: #FFC131;
+  --snaply-yellow-hover: #FFD15F;
+  --snaply-yellow-muted: rgba(255, 193, 49, 0.12);
+  --snaply-yellow-glow: rgba(255, 193, 49, 0.22);
+
+  --snaply-background: #070B0F;
+  --snaply-surface: #0E141B;
+  --snaply-surface-elevated: #141B24;
+  --snaply-border: rgba(217, 235, 242, 0.09);
+  --snaply-text-primary: #EEF7FA;
+  --snaply-text-secondary: #9CAAB2;
+  --snaply-text-muted: #66747C;
+
   /* ── Colors ── */
-  --bg: #080A0F;
-  --surface: #0D1118;
-  --elevated: #121722;
-  --elevated-hover: #181E2C;
+  --bg: var(--snaply-background);
+  --surface: var(--snaply-surface);
+  --surface-primary: var(--snaply-surface);
+  --surface-secondary: var(--snaply-surface-elevated);
+  --surface-tertiary: #19232E;
+  --elevated: var(--snaply-surface-elevated);
+  --elevated-hover: #1A2530;
   --border: rgba(255, 255, 255, 0.08);
+  --border-color: var(--snaply-border);
   --border-hover: rgba(255, 255, 255, 0.14);
 
-  --accent: #7C6DF7;
-  --accent-hover: #8D80F9;
-  --accent-subtle: rgba(124, 109, 247, 0.12);
-  --accent-glow: rgba(124, 109, 247, 0.25);
+  --accent: var(--snaply-cyan);
+  --accent-primary: var(--snaply-cyan);
+  --accent-hover: var(--snaply-cyan-hover);
+  --accent-active: var(--snaply-cyan-active);
+  --accent-subtle: var(--snaply-cyan-muted);
+  --accent-glow: var(--snaply-cyan-glow);
+  --accent-secondary: var(--snaply-yellow);
 
-  --text: #E8E9ED;
-  --text-secondary: #9498A5;
-  --text-muted: #5C6070;
+  --text: var(--snaply-text-primary);
+  --text-primary: var(--snaply-text-primary);
+  --text-secondary: var(--snaply-text-secondary);
+  --text-muted: var(--snaply-text-muted);
 
-  --success: #34D399;
-  --success-subtle: rgba(52, 211, 153, 0.12);
-  --warning: #FBBF24;
-  --warning-subtle: rgba(251, 191, 36, 0.12);
+  --success: #24C8DB;
+  --success-subtle: rgba(36, 200, 219, 0.12);
+  --warning: var(--snaply-yellow);
+  --warning-subtle: var(--snaply-yellow-muted);
   --error: #F87171;
   --error-subtle: rgba(248, 113, 113, 0.12);
 
@@ -35,6 +63,12 @@
   --text-xl: 1.125rem;
   --text-2xl: 1.375rem;
   --text-3xl: 1.75rem;
+  --font-xs: var(--text-xs);
+  --font-sm: var(--text-sm);
+  --font-base: var(--text-base);
+  --font-md: var(--text-md);
+  --font-lg: var(--text-lg);
+  --font-xl: var(--text-xl);
 
   --weight-normal: 400;
   --weight-medium: 500;

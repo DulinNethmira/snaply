@@ -82,7 +82,7 @@
       ctx.clearRect(x, y, rectWidth, rectHeight);
       
       // Draw border
-      ctx.strokeStyle = '#7C6DF7'; // Accent color
+      ctx.strokeStyle = '#24C8DB';
       ctx.lineWidth = 1.5;
       ctx.strokeRect(x, y, rectWidth, rectHeight);
     }

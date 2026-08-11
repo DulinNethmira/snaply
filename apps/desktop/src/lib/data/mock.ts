@@ -99,7 +99,7 @@ export const mockSettings: SettingsData = {
   },
   appearance: {
     theme: 'dark',
-    accentColor: '#7C6DF7',
+    accentColor: '#24C8DB',
     compactMode: false
   },
   uploads: {
