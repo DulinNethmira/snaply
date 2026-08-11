@@ -4,16 +4,19 @@
   import Camera from '$lib/icons/Camera.svelte';
   import Clipboard from '$lib/icons/Clipboard.svelte';
   import Check from '$lib/icons/Check.svelte';
+  import { invoke } from '@tauri-apps/api/core';
+  import { addBrowserFileUpload } from '$lib/stores/upload.svelte';
 
-  let uploadState: UploadState = $state('idle');
+  let viewState: UploadState = $state('idle');
   let progress = $state(0);
   let dragCounter = $state(0);
+  let fileInput: HTMLInputElement;
 
   function handleDragEnter(e: DragEvent) {
     e.preventDefault();
     dragCounter++;
-    if (uploadState === 'idle' || uploadState === 'hover') {
-      uploadState = 'dragging';
+    if (viewState === 'idle' || viewState === 'hover') {
+      viewState = 'dragging';
     }
   }
 
@@ -22,7 +25,7 @@
     dragCounter--;
     if (dragCounter <= 0) {
       dragCounter = 0;
-      if (uploadState === 'dragging') uploadState = 'idle';
+      if (viewState === 'dragging') viewState = 'idle';
     }
   }
 
@@ -33,44 +36,73 @@
   function handleDrop(e: DragEvent) {
     e.preventDefault();
     dragCounter = 0;
-    simulateUpload();
+    const files = Array.from(e.dataTransfer?.files ?? []);
+    if (files.length > 0) {
+      uploadFiles(files);
+    } else {
+      viewState = 'idle';
+    }
   }
 
-  function simulateUpload() {
-    uploadState = 'uploading';
+  async function uploadFiles(files: File[]) {
+    viewState = 'uploading';
     progress = 0;
-    const interval = setInterval(() => {
-      progress += Math.random() * 15 + 5;
-      if (progress >= 100) {
-        progress = 100;
-        clearInterval(interval);
-        uploadState = 'processing';
-        setTimeout(() => {
-          uploadState = 'success';
-          setTimeout(() => {
-            uploadState = 'idle';
-          }, 2000);
-        }, 800);
-      }
-    }, 150);
+    for (let index = 0; index < files.length; index++) {
+      progress = Math.round((index / files.length) * 100);
+      await addBrowserFileUpload(files[index]);
+    }
+    progress = 100;
+    viewState = 'success';
+    setTimeout(() => {
+      viewState = 'idle';
+    }, 1600);
+  }
+
+  function handleFileSelection(e: Event) {
+    const input = e.currentTarget as HTMLInputElement;
+    const files = Array.from(input.files ?? []);
+    input.value = '';
+    if (files.length > 0) {
+      uploadFiles(files);
+    }
+  }
+
+  function openFilePicker() {
+    fileInput?.click();
+  }
+
+  async function captureScreenshot() {
+    await invoke('start_capture');
+  }
+
+  async function shareClipboard() {
+    await invoke('share_clipboard');
   }
 
   function handleMouseEnter() {
-    if (uploadState === 'idle') uploadState = 'hover';
+    if (viewState === 'idle') viewState = 'hover';
   }
 
   function handleMouseLeave() {
-    if (uploadState === 'hover') uploadState = 'idle';
+    if (viewState === 'hover') viewState = 'idle';
   }
 </script>
 
+<input
+  class="file-input"
+  type="file"
+  multiple
+  bind:this={fileInput}
+  onchange={handleFileSelection}
+/>
+
 <div
   class="dropzone"
-  class:hover={uploadState === 'hover'}
-  class:dragging={uploadState === 'dragging'}
-  class:uploading={uploadState === 'uploading'}
-  class:processing={uploadState === 'processing'}
-  class:success={uploadState === 'success'}
+  class:hover={viewState === 'hover'}
+  class:dragging={viewState === 'dragging'}
+  class:uploading={viewState === 'uploading'}
+  class:processing={viewState === 'processing'}
+  class:success={viewState === 'success'}
   role="button"
   tabindex="0"
   aria-label="Drop files to upload"
@@ -84,13 +116,13 @@
   <div class="dropzone-border"></div>
 
   <div class="dropzone-content">
-    {#if uploadState === 'success'}
+    {#if viewState === 'success'}
       <div class="state-icon success-icon">
         <Check size={24} />
       </div>
       <p class="dropzone-title">Shared successfully</p>
       <p class="dropzone-subtitle">Link copied to clipboard</p>
-    {:else if uploadState === 'uploading' || uploadState === 'processing'}
+    {:else if viewState === 'uploading' || viewState === 'processing'}
       <div class="progress-ring">
         <svg viewBox="0 0 48 48">
           <circle class="progress-bg" cx="24" cy="24" r="20" />
@@ -105,7 +137,7 @@
         <span class="progress-text">{Math.round(progress)}%</span>
       </div>
       <p class="dropzone-title">
-        {uploadState === 'processing' ? 'Processing...' : 'Uploading...'}
+        {viewState === 'processing' ? 'Processing...' : 'Uploading...'}
       </p>
     {:else}
       <div class="state-icon upload-icon">
@@ -116,17 +148,17 @@
     {/if}
   </div>
 
-  {#if uploadState === 'idle' || uploadState === 'hover'}
+  {#if viewState === 'idle' || viewState === 'hover'}
     <div class="dropzone-actions">
-      <button class="action-btn" onclick={() => simulateUpload()} data-id="btn-capture">
+      <button class="action-btn" onclick={captureScreenshot} data-id="btn-capture">
         <Camera size={15} />
         <span>Capture Screenshot</span>
       </button>
-      <button class="action-btn" onclick={() => simulateUpload()} data-id="btn-upload">
+      <button class="action-btn" onclick={openFilePicker} data-id="btn-upload">
         <Upload size={15} />
         <span>Upload File</span>
       </button>
-      <button class="action-btn" onclick={() => simulateUpload()} data-id="btn-clipboard">
+      <button class="action-btn" onclick={shareClipboard} data-id="btn-clipboard">
         <Clipboard size={15} />
         <span>Share Clipboard</span>
       </button>
@@ -135,6 +167,10 @@
 </div>
 
 <style>
+  .file-input {
+    display: none;
+  }
+
   .dropzone {
     position: relative;
     display: flex;

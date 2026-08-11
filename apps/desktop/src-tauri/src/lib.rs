@@ -101,6 +101,11 @@ fn cancel_capture(app: tauri::AppHandle) {
     close_all_overlays(&app);
 }
 
+#[tauri::command]
+fn start_capture(app: tauri::AppHandle) {
+    trigger_capture(&app);
+}
+
 fn close_all_overlays(app: &tauri::AppHandle) {
     for (label, window) in app.webview_windows() {
         if label.starts_with("overlay_") {
@@ -397,6 +402,11 @@ fn check_clipboard(app: &tauri::AppHandle) {
 }
 
 #[tauri::command]
+fn share_clipboard(app: tauri::AppHandle) {
+    check_clipboard(&app);
+}
+
+#[tauri::command]
 async fn check_update(app: tauri::AppHandle) -> Result<bool, String> {
     match app.updater() {
         Ok(updater) => match updater.check().await {
@@ -514,6 +524,7 @@ pub fn run() {
             get_all_monitors,
             crop_and_preview,
             cancel_capture,
+            start_capture,
             copy_to_clipboard,
             register_context_menu,
             upload_file_to_r2,
@@ -522,7 +533,8 @@ pub fn run() {
             set_auth_token,
             get_auth_token,
             delete_auth_token,
-            check_update
+            check_update,
+            share_clipboard
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

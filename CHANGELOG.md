@@ -7,6 +7,23 @@ Snaply uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [0.1.3] — 2026-08-11
+
+### Fixed
+
+- Replaced fake dashboard upload behavior with real file picker and drag-and-drop upload calls.
+- Fixed recent share and usage loading by adding a current-user shares endpoint.
+- Replaced dummy device and usage values with real local-session data.
+- Prevented screenshot overlay windows from being wrapped by the authenticated app layout.
+- Fixed `Ctrl+Shift+S` and clipboard share buttons by wiring them to Tauri commands.
+- Fixed `.\dev.ps1 -BackendOnly` so it stays backend-only and no longer crashes on cleanup.
+- Centered main app content on wide/fullscreen windows.
+
+### Changed
+
+- Register the Windows Explorer file context menu from the desktop app startup path.
+- Added backend test coverage for current-user share listing.
+
 ## [0.1.2] — 2026-08-11
 
 ### Fixed
@@ -74,3 +91,4 @@ This is the first public release of Snaply.
 [0.1.0]: https://github.com/DulinNethmira/snaply/releases/tag/v0.1.0
 [0.1.1]: https://github.com/DulinNethmira/snaply/releases/tag/v0.1.1
 [0.1.2]: https://github.com/DulinNethmira/snaply/releases/tag/v0.1.2
+[0.1.3]: https://github.com/DulinNethmira/snaply/releases/tag/v0.1.3

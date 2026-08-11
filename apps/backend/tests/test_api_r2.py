@@ -61,6 +61,32 @@ async def test_complete_upload_and_download_share(auth_client: AsyncClient):
 
 
 @pytest.mark.asyncio
+async def test_user_shares_returns_completed_uploads(auth_client: AsyncClient):
+    resp = await auth_client.post("/api/v1/uploads/request", json={
+        "filename": "listed.png",
+        "size": 2048,
+        "mime_type": "image/png"
+    })
+    upload_id = resp.json()["upload_id"]
+
+    complete_resp = await auth_client.post(f"/api/v1/uploads/{upload_id}/complete")
+    assert complete_resp.status_code == 201
+    share_id = complete_resp.json()["id"]
+
+    resp = await auth_client.get("/api/v1/me/shares")
+    assert resp.status_code == 200
+    shares = resp.json()
+
+    assert len(shares) == 1
+    assert shares[0]["id"] == share_id
+    assert shares[0]["filename"] == "listed.png"
+    assert shares[0]["type"] == "image"
+    assert shares[0]["size"] == 2048
+    assert shares[0]["status"] == "active"
+    assert shares[0]["url"].startswith("http://127.0.0.1:8000/s/")
+
+
+@pytest.mark.asyncio
 async def test_invalid_share_download(auth_client: AsyncClient):
     resp = await auth_client.get("/api/v1/shares/invalid-token-123/download")
     assert resp.status_code == 404

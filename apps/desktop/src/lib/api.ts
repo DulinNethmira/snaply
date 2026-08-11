@@ -119,11 +119,33 @@ export async function getProfile() {
 }
 
 export async function getRecentShares() {
-    return request<any[]>('/users/me/shares');
+    const shares = await request<any[]>('/me/shares');
+    return shares.map((share) => ({
+        ...share,
+        createdAt: new Date(share.createdAt),
+        expiresAt: share.expiresAt ? new Date(share.expiresAt) : null,
+    }));
 }
 
 export async function getUsageStats() {
-    return request<any>('/usage/stats');
+    const [profile, shares] = await Promise.all([
+        getProfile(),
+        getRecentShares(),
+    ]);
+
+    const activeShares = shares.filter((share) => share.status === 'active');
+    const today = new Date().toDateString();
+
+    return {
+        totalShares: shares.length,
+        storageUsed: profile.storage_used ?? 0,
+        storageLimit: profile.storage_limit ?? 0,
+        activeLinks: activeShares.length,
+        sharesToday: shares.filter((share) => share.createdAt.toDateString() === today).length,
+        viewsToday: activeShares.reduce((sum, share) => sum + (share.views ?? 0), 0),
+        monthlyUploads: profile.monthly_uploads ?? 0,
+        monthlyLimit: profile.monthly_limit ?? 0,
+    };
 }
 
 export async function deleteShare(shareId: string) {

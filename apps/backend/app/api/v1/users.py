@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 
 from app.db.session import get_db
-from app.models.models import User, Upload, UsageRecord
+from app.models.models import User, Upload, UsageRecord, ShareLink
 from app.schemas.schemas import UserResponse, UserProfileResponse
 from app.api.deps import get_current_user
 from app.core.config import settings
@@ -39,3 +39,33 @@ async def get_profile(
         monthly_uploads=monthly_uploads,
         monthly_limit=settings.MAX_MONTHLY_UPLOADS,
     )
+
+
+@router.get("/me/shares")
+async def get_user_shares(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(ShareLink, Upload)
+        .join(Upload, ShareLink.upload_id == Upload.id)
+        .where(Upload.user_id == user.id, Upload.status != "deleted")
+        .order_by(ShareLink.created_at.desc())
+        .limit(50)
+    )
+
+    shares = []
+    for share, upload in result.all():
+        shares.append({
+            "id": share.id,
+            "filename": upload.filename,
+            "type": "image" if upload.mime_type.startswith("image/") else "file",
+            "size": upload.size,
+            "url": f"http://127.0.0.1:8000/s/{share.token}",
+            "createdAt": share.created_at.isoformat(),
+            "expiresAt": share.expires_at.isoformat() if share.expires_at else None,
+            "views": share.views,
+            "status": "active" if share.is_active else "deleted",
+        })
+
+    return shares

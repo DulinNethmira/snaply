@@ -126,6 +126,57 @@ export async function addFileUpload(filePath: string) {
     }
 }
 
+export async function addBrowserFileUpload(file: File) {
+    const id = crypto.randomUUID();
+    const filename = file.name || 'upload.bin';
+
+    uploadState.queue.push({
+        id,
+        filename,
+        state: 'Preparing',
+        uploadedBytes: 0,
+        totalBytes: file.size,
+        speedBps: 0,
+        etaSeconds: 0,
+    });
+
+    const task = uploadState.queue.find(t => t.id === id)!;
+
+    try {
+        const req = await requestUpload(filename, file.size || 1, file.type || getMimeType(filename));
+        task.state = 'Uploading';
+
+        const startedAt = Date.now();
+        const response = await fetch(req.upload_url, {
+            method: 'PUT',
+            headers: { 'Content-Type': file.type || getMimeType(filename) },
+            body: file,
+        });
+
+        if (!response.ok) {
+            throw new Error(`Upload failed with status ${response.status}`);
+        }
+
+        task.uploadedBytes = file.size;
+        task.totalBytes = file.size;
+        const elapsedSeconds = Math.max((Date.now() - startedAt) / 1000, 0.1);
+        task.speedBps = file.size / elapsedSeconds;
+        task.etaSeconds = 0;
+
+        task.state = 'Processing';
+        const comp = await completeUpload(req.upload_id);
+
+        task.state = 'Complete';
+        addHistory(task, comp.token);
+    } catch (e) {
+        console.error('Upload failed', e);
+        task.state = 'Failed';
+    } finally {
+        delete _lastProgress[id + '_time'];
+        delete _lastProgress[id + '_bytes'];
+    }
+}
+
 export async function addMemoryUpload(captureKey: string, filename: string, mimeType: string, isText: boolean = false) {
     const id = crypto.randomUUID();
     
@@ -212,4 +263,3 @@ function addHistory(task: UploadTask, token: string) {
         url: url
     });
 }
-

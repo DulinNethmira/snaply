@@ -116,8 +116,14 @@ Write-Host "      Docs: http://127.0.0.1:8000/docs" -ForegroundColor DarkGray
 if ($BackendOnly) {
     Write-Host ""
     Write-Host "  Backend running. Press Ctrl+C to stop." -ForegroundColor Yellow
-    Wait-Process -Id $backendProc.Id
-    exit 0
+    try {
+        Wait-Process -Id $backendProc.Id
+    } finally {
+        if ($null -ne $backendProc -and -not $backendProc.HasExited) {
+            Stop-Process -Id $backendProc.Id -Force -ErrorAction SilentlyContinue
+        }
+    }
+    return
 }
 
 # ── Start desktop app ─────────────────────────────────────────
@@ -139,9 +145,13 @@ try {
 } finally {
     # Always clean up backend when desktop exits
     Write-Host ""
-    Write-Host "  Stopping backend (PID $($backendProc.Id))..." -ForegroundColor Yellow
-    if (-not $backendProc.HasExited) {
-        $backendProc | Stop-Process -Force
+    if ($null -ne $backendProc) {
+        Write-Host "  Stopping backend (PID $($backendProc.Id))..." -ForegroundColor Yellow
+        if (-not $backendProc.HasExited) {
+            Stop-Process -Id $backendProc.Id -Force -ErrorAction SilentlyContinue
+        }
+    } else {
+        Write-Host "  Backend process was not started." -ForegroundColor Yellow
     }
     Write-Host "  Done." -ForegroundColor Green
 }
