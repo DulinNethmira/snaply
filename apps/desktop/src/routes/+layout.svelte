@@ -43,6 +43,15 @@
         console.warn('File Explorer integration was not registered', error);
     });
 
+    // Check for updates automatically in the background
+    invoke('check_update').then((hasUpdate) => {
+        if (hasUpdate) {
+            console.log("An update is available and ready to install.");
+        }
+    }).catch((error) => {
+        console.warn('Update check failed on startup', error);
+    });
+
     // Listen to Tauri window drops
     listen('tauri://drop', (event: any) => {
         const paths = event.payload.paths as string[];

@@ -94,11 +94,31 @@
 
       <SettingsSection title="About">
         <div class="about-info">
-          <div class="app-version">Snaply v0.1.0 (Phase 7)</div>
+          <div class="app-version">
+            {#await import('@tauri-apps/api/app').then(m => m.getVersion())}
+              Loading version...
+            {:then v}
+              Snaply v{v}
+            {/await}
+          </div>
           <div class="app-links">
-            <a href="/settings">Check for updates</a>
-            <a href="/settings">Terms of Service</a>
-            <a href="/settings">Privacy Policy</a>
+            <button 
+              class="btn-link"
+              style="padding: 0; text-align: left;"
+              onclick={async () => {
+                const { invoke } = await import('@tauri-apps/api/core');
+                try {
+                  const hasUpdate = await invoke('check_update');
+                  if (!hasUpdate) {
+                    alert('You are on the latest version!');
+                  }
+                } catch (e) {
+                  alert('Update check failed: ' + e);
+                }
+              }}
+            >Check for updates</button>
+            <a href="https://snaply-dev.github.io/terms" target="_blank">Terms of Service</a>
+            <a href="https://snaply-dev.github.io/privacy" target="_blank">Privacy Policy</a>
           </div>
         </div>
       </SettingsSection>
@@ -199,12 +219,16 @@
     gap: var(--space-1);
   }
 
-  .app-links a {
+  .app-links a, .app-links button {
     font-size: var(--text-sm);
     color: var(--text-secondary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
   }
 
-  .app-links a:hover {
+  .app-links a:hover, .app-links button:hover {
     color: var(--accent);
   }
 
