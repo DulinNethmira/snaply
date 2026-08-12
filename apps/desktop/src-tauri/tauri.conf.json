@@ -25,13 +25,6 @@
         "theme": "Dark"
       }
     ],
-    "plugins": {
-      "deep-link": {
-        "desktop": {
-          "schemes": ["snaply"]
-        }
-      }
-    },
     "security": {
       "csp": "default-src 'self'; connect-src 'self' http://127.0.0.1:8000 https://api.snaply.app https://*.r2.cloudflarestorage.com; img-src 'self' blob: data: http://127.0.0.1:8000 https:; media-src 'self' blob: http://127.0.0.1:8000 https:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'"
     }
@@ -61,6 +54,11 @@
     }
   },
   "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": ["snaply"]
+      }
+    },
     "updater": {
       "active": true,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEM1REE5NDU4QzcxNkZCN0YKUldSLyt4YkhXSlRheFVPM2hyTlVGeFVWV0dBei9TeHo5dW9vZ1Q1VW9mcDF3aUNoVU9vZ05kRDkK",
