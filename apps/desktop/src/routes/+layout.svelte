@@ -12,6 +12,7 @@
   import { initClipboardManager } from '$lib/stores/clipboard.svelte';
   import { listen } from '@tauri-apps/api/event';
   import { invoke } from '@tauri-apps/api/core';
+  import { onOpenUrl } from '@tauri-apps/plugin-deep-link';
   import { getProfile } from '$lib/api';
 
   type Props = { children: Snippet };
@@ -49,6 +50,29 @@
             paths.forEach(p => addFileUpload(p));
         }
     });
+
+    // Listen for deep link authentication (Google OAuth)
+    try {
+        await onOpenUrl(async (urls) => {
+            for (const urlStr of urls) {
+                if (urlStr.includes('snaply://auth')) {
+                    try {
+                        const url = new URL(urlStr);
+                        const token = url.searchParams.get('token');
+                        if (token) {
+                            await invoke('set_auth_token', { token });
+                            await getProfile(); // verify the token works
+                            isAuthenticated = true;
+                        }
+                    } catch (e) {
+                        console.error('Failed to parse deep link token', e);
+                    }
+                }
+            }
+        });
+    } catch (e) {
+        console.warn('Deep link plugin not fully initialized in this env', e);
+    }
   });
 </script>
 

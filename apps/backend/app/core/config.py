@@ -14,6 +14,17 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60  # 1 hour; refresh flow extends sessions
     
+    # Google OAuth
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    
+    # Email / SMTP
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    MAIL_FROM: str = "noreply@snaply.app"
+    
     # SQLite
     SQLALCHEMY_DATABASE_URI: str = "sqlite+aiosqlite:///./snaply.db"
 

@@ -21,10 +21,17 @@
         "minimizable": true,
         "maximizable": true,
         "closable": true,
+        "visible": false,
         "theme": "Dark"
       }
     ],
-
+    "plugins": {
+      "deep-link": {
+        "desktop": {
+          "schemes": ["snaply"]
+        }
+      }
+    },
     "security": {
       "csp": "default-src 'self'; connect-src 'self' http://127.0.0.1:8000 https://api.snaply.app https://*.r2.cloudflarestorage.com; img-src 'self' blob: data: http://127.0.0.1:8000 https:; media-src 'self' blob: http://127.0.0.1:8000 https:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'"
     }

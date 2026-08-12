@@ -48,3 +48,4 @@ keyring = "2"
 tokio-util = { version = "0.7", features = ["codec"] }
 bytes = "1"
 async-stream = "0.3"
+tauri-plugin-deep-link = "2.4.9"
