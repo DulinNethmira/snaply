@@ -230,7 +230,7 @@ async def google_callback(request: Request, code: str, background_tasks: Backgro
         
         # Redirect to deep link to open the app with the token
         # If deep linking fails, the user will see a fallback page.
-        fallback_html = f\"\"\"
+        fallback_html = f"""
         <html>
             <head><title>Snaply Authentication</title></head>
             <body style="font-family: sans-serif; text-align: center; padding-top: 50px; background-color: #070B0F; color: #EEF7FA;">
@@ -247,6 +247,6 @@ async def google_callback(request: Request, code: str, background_tasks: Backgro
                 </script>
             </body>
         </html>
-        \"\"\"
+        """
         from fastapi.responses import HTMLResponse
         return HTMLResponse(content=fallback_html)
