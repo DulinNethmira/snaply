@@ -7,6 +7,30 @@ Snaply uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [0.1.4] — 2026-08-12
+
+Welcome to Snaply v0.1.4! 🚀 This release brings major quality-of-life improvements, including seamless Google authentication, automated background emails, and critical stability fixes for file uploads and sharing.
+
+### ✨ New
+
+- **Google OAuth Integration**: Added a sleek "Continue with Google" button to the desktop app! Instantly securely authenticate without typing passwords.
+- **Deep Linking Support**: The Snaply app now registers the `snaply://` custom URI scheme on Windows to seamlessly capture OAuth tokens directly from your web browser back into the app!
+- **Automated Welcome Emails**: A brand new SMTP background task system now fires off beautiful, Snaply-branded HTML welcome emails the moment you register.
+- **Manual Authentication Fallback**: Having trouble with deep links? The Google login flow now includes a robust manual token fallback UI.
+
+### 🛠 Fixed
+
+- **Dashboard 404s**: Repaired a broken API path (`/me/shares` -> `/users/me/shares`) that was preventing the Recent Shares page from loading correctly.
+- **File Upload Quotas**: The desktop app now correctly calculates the exact file size using a native Rust `get_file_size` command before uploading, fixing an issue where all files were incorrectly reported as 1MB to the backend.
+- **Context Menu Sharing**: Fixed a bug where the `file-shared` event was trying to upload the Snaply executable itself instead of the intended file.
+- **Recent Shares Empty State**: The "Capture Screenshot" button in the empty state now correctly triggers the screen capture overlay instead of logging to the console.
+
+### ⚡ Improved
+
+- **Usage Stats Resilience**: The usage statistics page now gracefully handles partial API failures, ensuring you can always see your profile stats even if your recent shares fail to load.
+
+---
+
 ## [0.1.3] — 2026-08-11
 
 ### Fixed
