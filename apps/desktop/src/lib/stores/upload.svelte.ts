@@ -55,8 +55,9 @@ export function initUploadManager() {
 
     listen('file-shared', (event: any) => {
         const args = event.payload as string[];
-        if (args && args.length > 0) {
-            args.forEach(arg => addFileUpload(arg));
+        // args[0] is the executable path — skip it, upload only the rest
+        if (args && args.length > 1) {
+            args.slice(1).forEach(arg => addFileUpload(arg));
         }
     });
 }
@@ -94,11 +95,14 @@ export async function addFileUpload(filePath: string) {
     const task = uploadState.queue.find(t => t.id === id)!;
     
     try {
-        // Assume file size is unknown until we try to upload, or we can get it via a Rust command.
-        // But let's just pass a dummy size to requestUpload (backend can enforce quotas later).
-        // For accurate size, we should get it from Rust. Let's use a placeholder of 1MB for the request quota check.
-        // The real size will be streamed.
-        const req = await requestUpload(filename, 1024 * 1024, getMimeType(filename));
+        // Get real file size from Rust so backend storage quota is tracked accurately
+        let fileSize = 0;
+        try {
+            fileSize = await invoke<number>('get_file_size', { path: filePath });
+        } catch {
+            // continue with 0 if stat fails
+        }
+        const req = await requestUpload(filename, fileSize, getMimeType(filename));
         
         task.state = 'Uploading';
         

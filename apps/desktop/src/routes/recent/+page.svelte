@@ -3,6 +3,7 @@
   import EmptyState from '$lib/components/EmptyState.svelte';
   import { historyState } from '$lib/stores/upload.svelte';
   import { getRecentShares } from '$lib/api';
+  import { invoke } from '@tauri-apps/api/core';
   import { onMount } from 'svelte';
 
   let apiShares: any[] = $state([]);
@@ -37,7 +38,7 @@
         title="No shares yet."
         description="Your first screenshot can be shared in seconds. Drop a file to get started."
         actionLabel="Capture Screenshot"
-        onaction={() => console.log('Capture screenshot')}
+        onaction={() => invoke('start_capture')}
       />
     </div>
   {/if}

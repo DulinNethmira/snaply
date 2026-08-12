@@ -119,7 +119,7 @@ export async function getProfile() {
 }
 
 export async function getRecentShares() {
-    const shares = await request<any[]>('/me/shares');
+    const shares = await request<any[]>('/users/me/shares');
     return shares.map((share) => ({
         ...share,
         createdAt: new Date(share.createdAt),
@@ -128,10 +128,13 @@ export async function getRecentShares() {
 }
 
 export async function getUsageStats() {
-    const [profile, shares] = await Promise.all([
-        getProfile(),
-        getRecentShares(),
-    ]);
+    const profile = await getProfile();
+    let shares: any[] = [];
+    try {
+        shares = await getRecentShares();
+    } catch {
+        // shares not critical for usage stats
+    }
 
     const activeShares = shares.filter((share) => share.status === 'active');
     const today = new Date().toDateString();
@@ -141,8 +144,8 @@ export async function getUsageStats() {
         storageUsed: profile.storage_used ?? 0,
         storageLimit: profile.storage_limit ?? 0,
         activeLinks: activeShares.length,
-        sharesToday: shares.filter((share) => share.createdAt.toDateString() === today).length,
-        viewsToday: activeShares.reduce((sum, share) => sum + (share.views ?? 0), 0),
+        sharesToday: shares.filter((share) => share.createdAt?.toDateString?.() === today).length,
+        viewsToday: activeShares.reduce((sum: number, share: any) => sum + (share.views ?? 0), 0),
         monthlyUploads: profile.monthly_uploads ?? 0,
         monthlyLimit: profile.monthly_limit ?? 0,
     };

@@ -106,6 +106,13 @@ fn start_capture(app: tauri::AppHandle) {
     trigger_capture(&app);
 }
 
+#[tauri::command]
+fn get_file_size(path: String) -> Result<u64, String> {
+    std::fs::metadata(&path)
+        .map(|m| m.len())
+        .map_err(|e| e.to_string())
+}
+
 fn close_all_overlays(app: &tauri::AppHandle) {
     for (label, window) in app.webview_windows() {
         if label.starts_with("overlay_") {
@@ -525,6 +532,7 @@ pub fn run() {
             crop_and_preview,
             cancel_capture,
             start_capture,
+            get_file_size,
             copy_to_clipboard,
             register_context_menu,
             upload_file_to_r2,
