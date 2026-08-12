@@ -1,3 +1,4 @@
+<script lang="ts">
   import { login, register } from '$lib/api';
   import { API_URL } from '$lib/config';
   import { invoke } from '@tauri-apps/api/core';
